@@ -89,7 +89,7 @@ export const verifyFreshToken = (token) => {
 export const checkAuthenticated = (req, res, next) => {
   if (
     req?.originalUrl?.includes("/login") ||
-    req.originalUrl?.includes("logout") ||
+    req.originalUrl?.includes("/logout") ||
     req?.originalUrl?.includes("/register") ||
     req?.originalUrl?.includes("/refresh")
   ) {
@@ -97,8 +97,6 @@ export const checkAuthenticated = (req, res, next) => {
   }
 
   const token = req.headers.authorization?.split(" ")[1];
-
-  console.log("token: " + token);
 
   if (!token) {
     return res.status(UNAUTHORIZED).json({
@@ -109,10 +107,10 @@ export const checkAuthenticated = (req, res, next) => {
 
   try {
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
-      if (err)
+      if (err) {
+        console.log(err);
         return res.status(501).json({ success: false, message: err.message });
-      else {
-        console.log("decoded: " + decoded);
+      } else {
         req.userId = decoded.userId;
         next();
       }

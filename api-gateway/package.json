@@ -4,7 +4,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/index"
+    "dev": "nodemon src/index",
+    "pm2": "pm2 start --no-daemon pm2.config.cjs"
   },
   "dependencies": {
     "@prisma/client": "^4.16.2",

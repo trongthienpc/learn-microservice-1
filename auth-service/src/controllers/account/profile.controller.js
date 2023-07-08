@@ -39,5 +39,7 @@ export const getAllUsers = async (req, res) => {
       message: response.message,
       data: response.data,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 };
