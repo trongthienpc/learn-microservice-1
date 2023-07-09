@@ -4,6 +4,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "postinstall": "prisma generate",
     "dev": "nodemon src/index",
     "pm2": "pm2 start --no-daemon pm2.config.cjs"
   },
