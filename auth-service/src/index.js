@@ -21,6 +21,6 @@ app.use("*", checkAuthenticated);
 // Routes
 app.use("/", authRouter);
 
-app.listen(process.env.PORT, () => {
-  console.log(`Auth service is listening on ${process.env.PORT}`);
+app.listen(5001, () => {
+  console.log(`Auth service is listening on ${5001}`);
 });

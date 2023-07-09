@@ -4,12 +4,13 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/index"
+    "dev": "cross-env NODE_ENV=development nodemon src/index"
   },
   "dependencies": {
     "@prisma/client": "^4.16.2",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "express": "^4.18.2",
     "helmet": "^7.0.0",
     "jsonwebtoken": "^9.0.1",

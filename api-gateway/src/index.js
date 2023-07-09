@@ -16,10 +16,14 @@ const limiter = rateLimit({
   max: 10, // limit each IP to 100 requests per `windowMs`(here, per 1 minute)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  keyGenerator: (req) => {
+    return req.ip + req.headers["user-agent"];
+  },
   handler: async (req, response, next, options) => {
     const ip = req.ip;
     const url = req.originalUrl;
     const times = options.windowMs;
+    console.log(options);
 
     await addIP(ip, url, times);
 
