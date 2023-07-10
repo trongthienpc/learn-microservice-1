@@ -4,8 +4,9 @@ import { login } from "../controllers/auth/login.controller.js";
 import {
   getUserById,
   getAllUsers,
+  updateUser,
+  resetPassword,
 } from "../controllers/account/profile.controller.js";
-import { checkAuthenticated } from "../middleware/jwt.service.js";
 
 const route = express.Router();
 
@@ -14,5 +15,7 @@ route.post("/register", register);
 route.post("/login", login);
 route.post("/getAll", getAllUsers);
 route.get("/profile/:id", getUserById);
+route.post("/update/:id", updateUser);
+route.post("/resetPassword", resetPassword);
 
 export default route;

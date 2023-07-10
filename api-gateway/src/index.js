@@ -52,8 +52,6 @@ app.use("/api/product", proxy("http://localhost:5004"));
 app.use("/api/shipping", proxy("http://localhost:5005"));
 
 app.get("/", (req, res) => {
-  const xForwardedFor = req.headers["x-forwarded-for"];
-  console.log(xForwardedFor);
   return res.send("Welcome to the api gateway!");
 });
 
