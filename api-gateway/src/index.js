@@ -45,11 +45,12 @@ app.use(helmet());
 
 app.use(morgan("combined"));
 
-app.use("/api/auth", proxy("http://localhost:5001"));
-app.use("/api/inventory", proxy("http://localhost:5002"));
-app.use("/api/payment", proxy("http://localhost:5003"));
-app.use("/api/product", proxy("http://localhost:5004"));
-app.use("/api/shipping", proxy("http://localhost:5005"));
+app.use("/api/auth", proxy(process.env.AUTH_URL));
+app.use("/api/inventory", proxy(process.env.INVENTORY_URL));
+app.use("/api/payment", proxy(process.env.PAYMENT_URL));
+app.use("/api/product", proxy(process.env.PRODUCT_URL));
+app.use("/api/shipping", proxy(process.env.SHIPPING_URL));
+app.use("/api/customer", proxy(process.env.CUSTOMER_URL));
 
 app.get("/", (req, res) => {
   return res.send("Welcome to the api gateway!");

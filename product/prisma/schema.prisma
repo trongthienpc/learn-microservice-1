@@ -12,6 +12,7 @@ datasource db {
 
 model product {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String?
   description String?
   banner      String?
   type        String?

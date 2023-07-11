@@ -1,8 +1,13 @@
 import express from "express";
 
+import { getAll, create, getById } from "../controllers/product.controller.js";
+
 const route = express.Router();
 
-route.get("/", (req, res) => {
-  try {
-  } catch (error) {}
-});
+route.get("/", getAll);
+
+route.post("/create", create);
+
+route.get("/:id", getById);
+
+export default route;
