@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model service {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  createdBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model price {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  serviceId   String
+  price       Int
+  appliedDate DateTime?
+  expiredDate DateTime?
+}
+
+model commission {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  type        String
+  value       Float
+  appliedDate DateTime
+  expiredDate DateTime
+}
+
+model commissionTarget {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  commissionId String
+  target       Int
+  value        Int
+  period       Int
+}
+
+model serviceCommission {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  serviceId    String
+  commissionId String
+}
+
+model staff {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  levelId String
+  exp     Int
+}
+
+model level {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  exp  Int
+}
