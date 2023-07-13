@@ -1,6 +1,6 @@
-import { create, getAll, getById } from "../services/services.js";
+import { create, getAll, getById } from "../services/service-commission.js";
 
-export const getServiceById = async (req, res) => {
+export const getServiceCommissionById = async (req, res) => {
   try {
     const id = req.params.id;
     const response = await getById(id);
@@ -18,7 +18,7 @@ export const getServiceById = async (req, res) => {
   }
 };
 
-export const getAllService = async (req, res) => {
+export const getAllServiceCommission = async (req, res) => {
   try {
     const response = await getAll();
 
@@ -35,7 +35,7 @@ export const getAllService = async (req, res) => {
   }
 };
 
-export const createService = async (req, res) => {
+export const createServiceCommission = async (req, res) => {
   try {
     const data = req.body;
 

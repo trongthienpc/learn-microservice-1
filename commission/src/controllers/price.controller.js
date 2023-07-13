@@ -1,6 +1,6 @@
-import { create, getAll, getById } from "../services/services.js";
+import { create, getAll, getById } from "../services/price.js";
 
-export const getServiceById = async (req, res) => {
+export const getPriceById = async (req, res) => {
   try {
     const id = req.params.id;
     const response = await getById(id);
@@ -18,7 +18,7 @@ export const getServiceById = async (req, res) => {
   }
 };
 
-export const getAllService = async (req, res) => {
+export const getAllPrice = async (req, res) => {
   try {
     const response = await getAll();
 
@@ -35,11 +35,9 @@ export const getAllService = async (req, res) => {
   }
 };
 
-export const createService = async (req, res) => {
+export const createPrice = async (req, res) => {
   try {
     const data = req.body;
-
-    console.log(data);
 
     const response = await create(data);
 

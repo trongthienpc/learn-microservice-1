@@ -2,7 +2,7 @@ import prisma from "../libs/prisma.js";
 
 export const create = async (data) => {
   try {
-    const res = await prisma.staff.create({
+    const res = await prisma.serviceCommission.create({
       data: data,
     });
 
@@ -21,7 +21,7 @@ export const create = async (data) => {
 
 export const getAll = async () => {
   try {
-    const data = await prisma.staff.findMany({});
+    const data = await prisma.serviceCommission.findMany({});
     return {
       success: true,
       message: "SUCCESS",
@@ -34,11 +34,10 @@ export const getAll = async () => {
 
 export const getById = async (id) => {
   try {
-    const data = await prisma.staff.findUnique({
+    const data = await prisma.serviceCommission.findUnique({
       where: {
         id: id,
       },
-      include: { _count: true, transactions: true },
     });
 
     return {

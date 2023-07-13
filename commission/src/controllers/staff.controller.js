@@ -37,7 +37,7 @@ export const getAllStaff = async (req, res) => {
 
 export const createStaff = async (req, res) => {
   try {
-    const data = req.body.data;
+    const data = req.body;
 
     const response = await create(data);
 

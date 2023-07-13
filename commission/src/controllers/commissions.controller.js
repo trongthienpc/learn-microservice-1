@@ -37,7 +37,7 @@ export const getAllCommission = async (req, res) => {
 
 export const createCommission = async (req, res) => {
   try {
-    const data = req.body.data;
+    const data = req.body;
 
     const response = await create(data);
 

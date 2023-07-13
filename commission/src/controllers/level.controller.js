@@ -37,7 +37,7 @@ export const getAllLevel = async (req, res) => {
 
 export const createLevel = async (req, res) => {
   try {
-    const data = req.body.data;
+    const data = req.body;
 
     const response = await create(data);
 

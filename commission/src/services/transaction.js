@@ -52,3 +52,48 @@ export const getById = async (id) => {
     };
   }
 };
+
+export const getByDate = async (fromDate, toDate) => {
+  try {
+    const data = await prisma.transaction.findMany({
+      where: {
+        transactionDate: {
+          gte: fromDate,
+          lte: toDate,
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: "SUCCESS",
+      data: data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
+export const getByUserId = async (id) => {
+  try {
+    const data = await prisma.transaction.findMany({
+      where: {
+        staffId: id,
+      },
+    });
+
+    return {
+      success: true,
+      message: "SUCCESS",
+      data: data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};
