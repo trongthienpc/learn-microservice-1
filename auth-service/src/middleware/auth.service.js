@@ -1,3 +1,4 @@
+import nodemailer from "nodemailer";
 import prisma from "../libs/prisma.js";
 import {
   LOGIN_INVALID,
@@ -150,6 +151,108 @@ export const getAllUsers = async () => {
     return {
       success: false,
       message: "ERROR",
+    };
+  }
+};
+
+/**
+ * Update user info by id
+ * @param {string} id
+ * @param {object} user
+ * @returns {object}
+ */
+export const updateUser = async (id, user) => {
+  try {
+    const password = user?.password;
+
+    if (password) {
+      const salt = await bcrypt.genSalt(15);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      user.password = hashedPassword;
+    }
+
+    const response = await prisma.account.update({
+      where: {
+        id: id,
+      },
+      data: user,
+    });
+
+    if (!response)
+      return {
+        success: false,
+        message: "User not found",
+      };
+
+    return {
+      success: true,
+      message: "SUCCESS",
+      data: response,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
+export const resetPassword = async (email) => {
+  try {
+    const salt = await bcrypt.genSalt(15);
+    console.log(salt);
+    const hashPassword = await bcrypt.hash(salt, salt);
+
+    await prisma.account.update({
+      where: {
+        email: email,
+      },
+      data: {
+        password: hashPassword,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Reset Password Success",
+      data: salt,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Email not found or invalid",
+    };
+  }
+};
+
+export const sendMail = async (recipient, subject, text) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.MAIL,
+      pass: process.env.EMAIL_PWD,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.MAIL,
+    to: recipient,
+    subject: subject,
+    text: text,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent:", info.response);
+    return {
+      success: true,
+      message: "SUCCESS",
+    };
+  } catch (err) {
+    console.log(err);
+    return {
+      success: false,
+      message: "FAILED",
     };
   }
 };
