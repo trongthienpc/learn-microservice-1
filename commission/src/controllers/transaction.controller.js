@@ -4,6 +4,7 @@ import {
   getById,
   getByDate,
   getByUserId,
+  updateTransactionStatus as updateStatus,
 } from "../services/transaction.js";
 
 export const getTransactionById = async (req, res) => {
@@ -90,6 +91,29 @@ export const getTransactionByUserId = async (req, res) => {
       message: response.message,
       data: response.data,
     });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const updateTransactionStatus = async (req, res) => {
+  console.log("I am updating transaction status");
+  try {
+    const id = req.params.id;
+    const { status } = req.body;
+
+    if (id && status) {
+      const response = await updateStatus(id, status);
+
+      return res.status(200).json({
+        success: response.success,
+        message: response.message,
+        data: response.data,
+      });
+    }
   } catch (error) {
     return res.status(500).json({
       success: false,

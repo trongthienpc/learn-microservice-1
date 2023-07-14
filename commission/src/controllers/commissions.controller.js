@@ -1,4 +1,4 @@
-import { create, getAll, getById } from "../services/commission.js";
+import { create, getAll, getById, update } from "../services/commission.js";
 
 export const getCommissionById = async (req, res) => {
   try {
@@ -48,6 +48,26 @@ export const createCommission = async (req, res) => {
     });
   } catch (error) {
     res.status(501).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const updateCommissions = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const data = req.body;
+
+    const response = await update(id, data);
+
+    return res.status(200).json({
+      success: response.success,
+      message: response.message,
+      data: response.data,
+    });
+  } catch (error) {
+    return res.status(500).json({
       success: false,
       message: error.message,
     });

@@ -11,20 +11,23 @@ datasource db {
 }
 
 model service {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
   createdBy   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  price       price[]
+  commission  commission[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model price {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  serviceId   String
+  serviceId   String    @db.ObjectId
   price       Int
   appliedDate DateTime?
   expiredDate DateTime?
+  service     service   @relation(fields: [serviceId], references: [id])
 }
 
 model commission {
@@ -33,6 +36,8 @@ model commission {
   value       Float
   appliedDate DateTime
   expiredDate DateTime
+  service     service? @relation(fields: [serviceId], references: [id])
+  serviceId   String?  @db.ObjectId
 }
 
 model commissionTarget {
@@ -73,4 +78,5 @@ model transaction {
   status          String? // like: "created, accepted, completed "
   staffId         String   @db.ObjectId
   staff           staff    @relation(fields: [staffId], references: [id])
+  moneyEarned     Int      @default(0)
 }

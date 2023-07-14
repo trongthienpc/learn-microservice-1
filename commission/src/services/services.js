@@ -21,7 +21,13 @@ export const create = async (data) => {
 
 export const getAll = async () => {
   try {
-    const data = await prisma.service.findMany({});
+    const data = await prisma.service.findMany({
+      include: {
+        _count: true,
+        commission: true,
+        price: true,
+      },
+    });
     return {
       success: true,
       message: "SUCCESS",

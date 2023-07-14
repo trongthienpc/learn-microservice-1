@@ -52,3 +52,37 @@ export const getById = async (id) => {
     };
   }
 };
+
+export const update = async (id, data) => {
+  try {
+    const res = await prisma.commission.update({
+      where: {
+        id: id,
+      },
+      data: data,
+    });
+
+    return {
+      success: true,
+      message: "SUCCESS",
+      data: res,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
+export const getCommissionByUserId = async (userId) => {
+  try {
+    // get list transactions of user id with transaction status = accepted
+    const data = await prisma.transaction.findMany({
+      where: {
+        staffId: userId,
+        status: "accepted",
+      },
+    });
+  } catch (error) {}
+};

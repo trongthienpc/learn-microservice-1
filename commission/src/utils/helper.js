@@ -25,3 +25,21 @@ export const getFirstDateOfMonth = (date) => {
   // Return the first date of the month
   return currentDate;
 };
+
+export const getLastDateOfMonth = (date) => {
+  // Create a new Date object using the provided date input
+  const currentDate = date ? new Date(date) : new Date();
+
+  // Get the month and year of the current date
+  const month = currentDate.getMonth();
+  const year = currentDate.getFullYear();
+
+  // Set the date to the next month's first day
+  currentDate.setMonth(month + 1, 1);
+
+  // Subtract one day to get the last day of the current month
+  currentDate.setDate(currentDate.getDate() - 1);
+
+  // Return the last date of the month
+  return currentDate;
+};
