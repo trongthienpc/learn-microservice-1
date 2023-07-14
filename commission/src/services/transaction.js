@@ -152,7 +152,6 @@ export const updateTransactionStatus = async (id, status) => {
         const theLastDate = getLastDateOfMonth(transaction.transactionDate);
 
         // find list transactions with same service id and was make same user id in period time
-
         const result = await prisma.transaction.findMany({
           where: {
             status: "accepted",
@@ -160,10 +159,28 @@ export const updateTransactionStatus = async (id, status) => {
             serviceId: transaction.serviceId,
             transactionDate: {
               gte: theFirstDate,
-              lte: transaction.transactionDate,
+              lte: theLastDate,
             },
           },
         });
+
+        console.log("result :>> ", result);
+
+        // get commission target by commission id
+        const commissionTarget = await prisma.commissionTarget.findMany({
+          where: {
+            commissionId: commission.id,
+            target: {
+              lte: result.length,
+            },
+          },
+          orderBy: {
+            target: "desc",
+          },
+          take: 1,
+        });
+
+        console.log("commissionTarget :>> ", commissionTarget);
       }
 
       const data = await prisma.transaction.update({
