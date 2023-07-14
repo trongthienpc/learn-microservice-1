@@ -112,6 +112,7 @@ export const checkAuthenticated = (req, res, next) => {
         return res.status(501).json({ success: false, message: err.message });
       } else {
         req.userId = decoded.userId;
+        console.log("req.userId :>> ", req.userId);
         next();
       }
     });

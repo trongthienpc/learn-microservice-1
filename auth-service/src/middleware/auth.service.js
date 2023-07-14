@@ -43,7 +43,7 @@ export const register = async ({ email, password }) => {
     });
 
     // generate jwt token
-    const token = generateAccessToken(user._id);
+    const token = generateAccessToken(user.id);
 
     return {
       success: true,

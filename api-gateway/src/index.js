@@ -13,11 +13,11 @@ const app = express();
 
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 10, // limit each IP to 100 requests per `windowMs`(here, per 1 minute)
+  max: 100, // limit each IP to 100 requests per `windowMs`(here, per 1 minute)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   keyGenerator: (req) => {
-    return req.ip + req.headers["user-agent"];
+    return req.headers["x-client-id"];
   },
   handler: async (req, response, next, options) => {
     const ip = req.ip;
@@ -52,8 +52,6 @@ app.use("/api/product", proxy("http://localhost:5004"));
 app.use("/api/shipping", proxy("http://localhost:5005"));
 
 app.get("/", (req, res) => {
-  const xForwardedFor = req.headers["x-forwarded-for"];
-  console.log(xForwardedFor);
   return res.send("Welcome to the api gateway!");
 });
 
