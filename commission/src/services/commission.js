@@ -78,7 +78,7 @@ export const update = async (id, data) => {
 export const getCommissionByUserId = async (userId) => {
   try {
     // get list transactions of user id with transaction status = accepted
-    const data = await prisma.transaction.findMany({
+    await prisma.transaction.findMany({
       where: {
         staffId: userId,
         status: "accepted",

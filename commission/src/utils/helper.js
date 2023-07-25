@@ -32,7 +32,7 @@ export const getLastDateOfMonth = (date) => {
 
   // Get the month and year of the current date
   const month = currentDate.getMonth();
-  const year = currentDate.getFullYear();
+  // const year = currentDate.getFullYear();
 
   // Set the date to the next month's first day
   currentDate.setMonth(month + 1, 1);
