@@ -78,11 +78,22 @@ export const update = async (id, data) => {
 export const getCommissionByUserId = async (userId) => {
   try {
     // get list transactions of user id with transaction status = accepted
-    await prisma.transaction.findMany({
+    const data = await prisma.transaction.findMany({
       where: {
         staffId: userId,
         status: "accepted",
       },
     });
-  } catch (error) {}
+
+    return {
+      success: true,
+      message: "SUCCESS",
+      data: data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
 };

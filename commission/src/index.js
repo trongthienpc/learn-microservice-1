@@ -16,7 +16,20 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+const whitelist = ["https://phuongchau.com"];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
+
+app.use(cors(corsOptions));
+
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(express.json());
