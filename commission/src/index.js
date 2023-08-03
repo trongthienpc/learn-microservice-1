@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import compression from "compression";
+import { rateLimit } from "express-rate-limit";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -11,12 +13,47 @@ import commissionRoute from "./routes/commission.route.js";
 import transactionRoute from "./routes/transaction.route.js";
 import commissionRateRoute from "./routes/commissionRate.route.js";
 import serviceCommissionRoute from "./routes/service-commission.route.js";
+import { checkAuthenticated } from "./middleware/jwt.js";
+import authenticationRouter from "./routes/authentication.route.js";
+import branchRoute from "./routes/branch.route.js";
+import { initializeCASLAbilityFromDB } from "./middleware/casl.js";
+
+// ROLE IMPORT
+import roleRouter from "./routes/role/role.route.js";
+import groupRouter from "./routes/role/group.route.js";
+import rolePermissionRouter from "./routes/role/rolePermission.route.js";
+import permissionRouter from "./routes/role/permission.route.js";
+import groupAccountRouter from "./routes/role/groupAccount.route.js";
+import roleGroupRouter from "./routes/role/roleGroup.route.js";
 
 dotenv.config();
 
 const app = express();
 
-const whitelist = ["https://phuongchau.com"];
+const whitelist = ["https://phuongchau.com", "http://localhost:5173"];
+
+const createAbility = async (req, res, next) => {
+  try {
+    if (
+      req?.originalUrl?.includes("/login") ||
+      req.originalUrl?.includes("/logout") ||
+      req?.originalUrl?.includes("/register") ||
+      req?.originalUrl?.includes("/refresh")
+    ) {
+      return next();
+    }
+
+    const ability = await initializeCASLAbilityFromDB();
+    console.log(ability);
+    req.ability = ability;
+    next();
+  } catch (error) {
+    console.log("Error creating ability: ", error);
+    res.status(500).json({ error: "Internal server error 1" });
+  }
+};
+
+app.use(createAbility);
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -28,20 +65,42 @@ const corsOptions = {
   },
 };
 
-app.use(cors(corsOptions));
+const limitOptions = rateLimit({
+  max: 100,
+  standardHeaders: true,
+  windowMs: 10 * 60 * 1000,
+});
+
+app.use(limitOptions);
+
+app.use(compression());
+
+// app.use(cors(corsOptions));
 
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(express.json());
 
+app.use("*", checkAuthenticated);
+
+app.use("/api/auth", authenticationRouter);
 app.use("/api/level", levelRoute);
 app.use("/api/price", priceRoute);
 app.use("/api/staff", staffRoute);
+app.use("/api/branch", branchRoute);
 app.use("/api/service", serviceRoute);
 app.use("/api/commission", commissionRoute);
 app.use("/api/transaction", transactionRoute);
 app.use("/api/commissionRate", commissionRateRoute);
 app.use("/api/service-commission", serviceCommissionRoute);
+
+/* --- ROLES - PERMISSIONS --- */
+app.use("/api/role", roleRouter);
+app.use("/api/permission", permissionRouter);
+app.use("/api/role-permission", rolePermissionRouter);
+app.use("/api/group", groupRouter);
+app.use("/api/group-account", groupAccountRouter);
+app.use("/api/role-group", roleGroupRouter);
 
 app.listen(process.env.PORT, () => {
   console.log("Server listening on port " + process.env.PORT);

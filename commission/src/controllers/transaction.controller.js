@@ -5,12 +5,13 @@ import {
   getByDate,
   getByUserId,
   updateTransactionStatus as updateStatus,
-} from "../services/transaction.js";
+} from "../services/transaction.service.js";
 
 export const getTransactionById = async (req, res) => {
   try {
     const id = req.params.id;
-    const response = await getById(id);
+    const userId = req.userId;
+    const response = await getById(id, userId);
 
     return res.status(200).json({
       success: response.success,

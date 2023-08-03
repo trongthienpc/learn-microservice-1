@@ -1,6 +1,8 @@
 import prisma from "../libs/prisma.js";
 import { getFirstDateOfMonth, getLastDateOfMonth } from "../utils/helper.js";
 
+/** WORKPLACE FOR OWN USER **/
+
 export const create = async (data) => {
   try {
     const res = await prisma.transaction.create({
@@ -20,9 +22,13 @@ export const create = async (data) => {
   }
 };
 
-export const getAll = async () => {
+export const getAllByUserId = async (userId) => {
   try {
-    const data = await prisma.transaction.findMany({});
+    const data = await prisma.transaction.findMany({
+      where: {
+        staffId: userId,
+      },
+    });
     return {
       success: true,
       message: "SUCCESS",
@@ -33,11 +39,12 @@ export const getAll = async () => {
   }
 };
 
-export const getById = async (id) => {
+export const getById = async (id, userId) => {
   try {
     const data = await prisma.transaction.findUnique({
       where: {
         id: id,
+        staffId: userId,
       },
     });
 
@@ -54,7 +61,7 @@ export const getById = async (id) => {
   }
 };
 
-export const getByDate = async (fromDate, toDate) => {
+export const getByDate = async (fromDate, toDate, userId) => {
   try {
     const data = await prisma.transaction.findMany({
       where: {
@@ -62,6 +69,7 @@ export const getByDate = async (fromDate, toDate) => {
           gte: fromDate,
           lte: toDate,
         },
+        staffId: userId,
       },
     });
 
@@ -205,4 +213,45 @@ export const updateTransactionStatus = async (id, status) => {
       message: error.message,
     };
   }
+};
+
+export const getAll = async (userId) => {
+  const user = await prisma.staff.findFirst({
+    where: {
+      id: userId,
+    },
+  });
+
+  let data;
+
+  if (user.role === "admin") {
+    data = await prisma.transaction.findMany({});
+  } else {
+    if (user.role === "manager") {
+      data = await prisma.transaction.findMany({
+        where: {
+          staff: {
+            branchId: user.branchId,
+          },
+        },
+      });
+
+      return;
+    } else {
+      data = await prisma.transaction.findMany({
+        where: {
+          staffId: userId,
+          staff: {
+            branchId: user.branchId,
+          },
+        },
+      });
+    }
+  }
+
+  return {
+    success: true,
+    message: "SUCCESS",
+    data: data,
+  };
 };

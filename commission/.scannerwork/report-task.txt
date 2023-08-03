@@ -1,6 +1,0 @@
-projectKey=bsht
-serverUrl=http://localhost:4000
-serverVersion=10.1.0.73491
-dashboardUrl=http://localhost:4000/dashboard?id=bsht
-ceTaskId=AYmMUlrUIKPWNec2sZ-2
-ceTaskUrl=http://localhost:4000/api/ce/task?id=AYmMUlrUIKPWNec2sZ-2

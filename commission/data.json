@@ -1,0 +1,80 @@
+[
+  {
+    "email": "elo@vifgepsog.gn",
+    "name": "Mark Chandler",
+    "password": "123456",
+    "address": "1756 Zovup Lane",
+    "dateOfBirth": "2023-10-21T07:34:40+07:00",
+    "longDate": "Friday, 15 September 2023",
+    "sex": "true",
+    "branchId": "9959318b-fecf-531e-bc8c-1568694ea04c",
+    "branch": "Avlihfok"
+  },
+  {
+    "email": "go@zu.mg",
+    "name": "Hilda Hampton",
+    "password": "123456",
+    "address": "987 Juggow Street",
+    "dateOfBirth": "2023-08-11T05:51:40+07:00",
+    "longDate": "Friday, 15 September 2023",
+    "sex": "true",
+    "branchId": "9959318b-fecf-531e-bc8c-1568694ea04c",
+    "branch": "Avlihfok"
+  },
+  {
+    "email": "casiit@tuvagpe.tr",
+    "name": "Eula Morton",
+    "password": "123456",
+    "address": "1749 Luik Street",
+    "dateOfBirth": "2023-01-26T05:06:03+07:00",
+    "sex": true
+  },
+  {
+    "email": "run@elewud.bn",
+    "name": "Dustin McDaniel",
+    "password": "123456",
+    "address": "292 Apsak Loop",
+    "dateOfBirth": "2023-10-22T14:32:54+07:00",
+    "sex": true
+  },
+  {
+    "email": "dohli@ezezavam.gd",
+    "name": "Christopher Little",
+    "password": "123456",
+    "address": "1063 Cake River",
+    "dateOfBirth": "2023-03-12T10:30:49+07:00",
+    "sex": true
+  },
+  {
+    "email": "bortijvu@ved.mp",
+    "name": "Beulah Frank",
+    "password": "123456",
+    "address": "996 Emma Loop",
+    "dateOfBirth": "2023-05-07T22:07:01+07:00",
+    "sex": true
+  },
+  {
+    "email": "sunkecluh@burene.ml",
+    "name": "Isabel Webster",
+    "password": "123456",
+    "address": "428 Seuce Drive",
+    "dateOfBirth": "2023-10-10T23:55:11+07:00",
+    "sex": true
+  },
+  {
+    "email": "wa@alrug.ng",
+    "name": "Lillie Roberts",
+    "password": "123456",
+    "address": "1401 Awele Park",
+    "dateOfBirth": "2023-10-09T21:18:04+07:00",
+    "sex": true
+  },
+  {
+    "email": "pifmav@vilam.ug",
+    "name": "Bernard Cruz",
+    "password": "123456",
+    "address": "1425 Modnu Loop",
+    "dateOfBirth": "2023-06-02T15:36:21+07:00",
+    "sex": true
+  }
+]
