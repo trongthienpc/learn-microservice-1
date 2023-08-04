@@ -53,25 +53,32 @@ export const update = async (id, data) => {
 
 export const getById = async (id) => {
   try {
-    const res = await prisma.role.findUnique({
+    const role = await prisma.role.findUnique({
       where: {
         id: id,
       },
       include: {
-        group: true,
+        groupRole: {
+          include: {
+            group: true,
+          },
+        },
         rolePermission: {
           include: {
             permission: true,
-            role: true,
           },
         },
       },
     });
 
+    // const groupHaveRole = role.groupRole.map((groupRole) => groupRole.group);
+
+    // console.log(groupHaveRole);
+
     return {
       success: true,
       message: "SUCCESS",
-      data: res,
+      data: role,
     };
   } catch (error) {
     return {

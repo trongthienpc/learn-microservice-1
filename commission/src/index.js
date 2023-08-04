@@ -43,17 +43,18 @@ const createAbility = async (req, res, next) => {
       return next();
     }
 
-    const ability = await initializeCASLAbilityFromDB();
-    console.log(ability);
-    req.ability = ability;
-    next();
+    if (req.userId) {
+      const ability = await initializeCASLAbilityFromDB(req.userId);
+      req.ability = ability;
+      next();
+    }
+
+    // return res.status(403).json({ message: "FORBIDDEN 3!" });
   } catch (error) {
     console.log("Error creating ability: ", error);
     res.status(500).json({ error: "Internal server error 1" });
   }
 };
-
-app.use(createAbility);
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -82,6 +83,8 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 app.use("*", checkAuthenticated);
+
+app.use(createAbility);
 
 app.use("/api/auth", authenticationRouter);
 app.use("/api/level", levelRoute);

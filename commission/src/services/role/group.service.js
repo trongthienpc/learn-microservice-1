@@ -57,11 +57,20 @@ export const getById = async (id) => {
       where: {
         id: id,
       },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        createdAt: true,
+        createdBy: true,
+        updatedAt: true,
+        updatedBy: true,
+        description: true,
         groupRole: {
           select: {
             role: {
-              include: {
+              select: {
+                name: true,
                 rolePermission: {
                   select: {
                     permission: true,
@@ -73,7 +82,11 @@ export const getById = async (id) => {
         },
         groupUsers: {
           select: {
-            account: true,
+            account: {
+              select: {
+                email: true,
+              },
+            },
           },
         },
       },

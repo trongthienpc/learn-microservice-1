@@ -193,7 +193,7 @@ model permission {
   action         String
   resource       String
   fields         String
-  conditions     String
+  conditions     Json
   inverted       Boolean
   system         Boolean
   rolePermission rolePermission[]

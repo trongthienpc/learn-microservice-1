@@ -61,7 +61,6 @@ export const resetPasswordController = async (req, res) => {
 
     try {
       const response = await sendMail(email, subject, text);
-      console.log("response", response);
       return res.status(200).json({
         success: response.success,
         message: response.message,
