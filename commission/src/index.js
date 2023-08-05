@@ -16,6 +16,7 @@ import serviceCommissionRoute from "./routes/service-commission.route.js";
 import { checkAuthenticated } from "./middleware/jwt.js";
 import authenticationRouter from "./routes/authentication.route.js";
 import branchRoute from "./routes/branch.route.js";
+import departmentRoute from "./routes/department.route.js";
 import { initializeCASLAbilityFromDB } from "./middleware/casl.js";
 
 // ROLE IMPORT
@@ -86,12 +87,18 @@ app.use("*", checkAuthenticated);
 
 app.use(createAbility);
 
+/* --- BRANCH - DEPARTMENT --- */
+app.use("/api/branch", branchRoute);
+app.use("/api/department", departmentRoute);
+
+/* --- PROFILE --- */
 app.use("/api/auth", authenticationRouter);
 app.use("/api/level", levelRoute);
-app.use("/api/price", priceRoute);
 app.use("/api/staff", staffRoute);
-app.use("/api/branch", branchRoute);
+
+/* --- SERVICES - COMMISSION --- */
 app.use("/api/service", serviceRoute);
+app.use("/api/price", priceRoute);
 app.use("/api/commission", commissionRoute);
 app.use("/api/transaction", transactionRoute);
 app.use("/api/commissionRate", commissionRateRoute);
@@ -105,8 +112,8 @@ app.use("/api/group", groupRouter);
 app.use("/api/group-account", groupAccountRouter);
 app.use("/api/role-group", roleGroupRouter);
 
-app.listen(process.env.PORT, () => {
-  console.log("Server listening on port " + process.env.PORT);
-});
+// app.listen(process.env.PORT, () => {
+//   console.log("Server listening on port " + process.env.PORT);
+// });
 
 export default app;

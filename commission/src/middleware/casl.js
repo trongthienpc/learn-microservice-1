@@ -1,7 +1,8 @@
 import { AbilityBuilder, createMongoAbility } from "@casl/ability";
 import prisma from "../libs/prisma.js";
+import redisClient from "./redis.js";
 
-async function fetchRolesAndPermissions(userId) {
+const fetchUserDataFromDB = async (userId) => {
   try {
     const users = await prisma.account.findUnique({
       where: {
@@ -31,93 +32,15 @@ async function fetchRolesAndPermissions(userId) {
         },
       },
     });
-
-    const roles = users.groupUsers.flatMap((groupUser) =>
-      groupUser.group.groupRole.map((groupRole) => groupRole.role)
-    );
-
-    const permissions = users.groupUsers.flatMap((groupUser) =>
-      groupUser.group.groupRole.flatMap((groupRole) =>
-        groupRole.role.rolePermission.map(
-          (rolePermission) => rolePermission.permission
-        )
-      )
-    );
-
-    return { roles, permissions };
-  } catch (error) {
-    console.log(error.message);
-    return {
-      roles: [],
-      permissions: [],
-    };
+    return users;
+  } catch (err) {
+    console.log("Error fetching user data from database: " + err.message);
+    return null;
   }
-}
-
-const createAbilityFromDB = (roles, permissions) => {
-  const { can, rules, cannot, build } = new AbilityBuilder(createMongoAbility);
-
-  if (permissions.length === 0) {
-    cannot("manage", "all");
-  }
-  roles.forEach((role) => {
-    role.rolePermission.forEach((rolePermission) => {
-      const permission = permissions.find(
-        (p) => p.id === rolePermission.permissionId
-      );
-
-      if (permission) {
-        const action = permission.action;
-        const resource = permission.resource;
-        const fields = permission.fields ? permission.fields?.split(",") : [];
-        const conditions = permission.conditions
-          ? JSON.parse(permission.conditions)
-          : null;
-
-        can(action, resource, fields, {
-          ...conditions,
-          inverted: rolePermission.inverted,
-        });
-      }
-    });
-  });
-
-  const ability = build(rules);
-
-  return ability;
 };
 
-export const initializeCASLAbilityFromDB = async (userId) => {
+export const initializeCASLAbilityFromData = async (users) => {
   try {
-    const users = await prisma.account.findUnique({
-      where: {
-        id: userId,
-      },
-      include: {
-        groupUsers: {
-          include: {
-            group: {
-              include: {
-                groupRole: {
-                  include: {
-                    role: {
-                      include: {
-                        rolePermission: {
-                          include: {
-                            permission: true,
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
-
     const { can, build } = new AbilityBuilder(createMongoAbility);
 
     if (users.groupUsers.length === 0) {
@@ -143,8 +66,37 @@ export const initializeCASLAbilityFromDB = async (userId) => {
         });
       });
     }
-    const ability = build();
-    return ability;
+    return build();
+  } catch (error) {
+    console.log("Error initializing CASL ability: " + error.message);
+    return null;
+  }
+};
+
+export const initializeCASLAbilityFromDB = async (userId) => {
+  try {
+    // check if the data is cached in Redis
+    redisClient.connect();
+    const cachedData = await redisClient.get(`${userId}`);
+    if (cachedData) {
+      console.log("We loaded cached data");
+      const abilityData = JSON.parse(cachedData);
+      redisClient.quit();
+      return await initializeCASLAbilityFromData(abilityData);
+    } else {
+      const users = await fetchUserDataFromDB(userId);
+      if (users) {
+        const ability = await initializeCASLAbilityFromData(users);
+        await redisClient.set(`${userId}`, JSON.stringify(users), {
+          EX: 3600,
+        });
+        redisClient.quit();
+        return ability;
+      } else {
+        // return a default ability if user data is not found in the database
+        return createMongoAbility([]);
+      }
+    }
   } catch (error) {
     console.log("Error initializing CASL ability: " + error.message);
     return createMongoAbility([]);

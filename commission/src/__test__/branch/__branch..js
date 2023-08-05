@@ -12,7 +12,7 @@ describe("Authentication CRUD", () => {
   beforeAll(async () => {
     const res = await request(app)
       .post("/api/auth/login")
-      .send({ email: "testnet102@gmail.com", password: "123456" });
+      .send({ email: "thientt.bdst@gmail.com", password: "123456" });
 
     accessToken = res.body.data;
     expect(res.statusCode).toEqual(200);

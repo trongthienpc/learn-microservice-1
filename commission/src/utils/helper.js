@@ -42,3 +42,8 @@ export const getLastDateOfMonth = (date) => {
   // Return the last date of the month
   return currentDate;
 };
+
+// get current date with ISO8601 format
+export const getTodayISODate = () => {
+  return new Date().toISOString().split("T")[0];
+};

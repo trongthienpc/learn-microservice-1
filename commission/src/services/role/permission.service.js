@@ -1,20 +1,47 @@
+import { createRoleGroup } from "../../controllers/role/roleGroup.controller.js";
 import prisma from "../../libs/prisma.js";
 
-export const create = async (data) => {
+const checkPermissionExist = async (action, resource) => {
   try {
-    const res = await prisma.permission.create({
-      data: data,
+    const permission = await prisma.permission.findFirst({
+      where: {
+        action: action,
+        resource: resource,
+      },
     });
+    console.log(permission);
+    if (permission) return false;
+    return true;
+  } catch (err) {
+    console.log("Something went wrong! ", err.message);
+    return false;
+  }
+};
 
-    return {
-      success: true,
-      message: "SUCCESS",
-      data: res,
-    };
-  } catch (error) {
+export const create = async (data) => {
+  const { action, resource } = data;
+  const isNotExist = await checkPermissionExist(action, resource);
+  if (isNotExist) {
+    try {
+      const res = await prisma.permission.create({
+        data: data,
+      });
+
+      return {
+        success: true,
+        message: "SUCCESS",
+        data: res,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  } else {
     return {
       success: false,
-      message: error.message,
+      message: "Permission is existing",
     };
   }
 };

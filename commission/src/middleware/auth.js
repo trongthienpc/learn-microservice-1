@@ -9,6 +9,7 @@ import {
 } from "../utils/constants.js";
 import bcrypt from "bcrypt";
 import { generateAccessToken } from "./jwt.js";
+import { getTodayISODate } from "../utils/helper.js";
 
 /**
  * Register a new user with the given email and password
@@ -64,6 +65,8 @@ export const register = async (email, password) => {
  */
 export const login = async (email, password) => {
   try {
+    updateAccountWhenLogin(email);
+
     const user = await prisma.account.findUnique({
       where: {
         email: email,
@@ -88,6 +91,11 @@ export const login = async (email, password) => {
       };
     }
 
+    updateLastAction(
+      user.id,
+      "Login to the system at time: " + new Date().toISOString()
+    );
+
     const accessToken = generateAccessToken(user.id);
 
     return {
@@ -99,6 +107,35 @@ export const login = async (email, password) => {
   } catch (error) {
     console.error(error);
   }
+};
+
+const updateAccountWhenLogin = async (email) => {
+  const today = getTodayISODate();
+
+  const user = await prisma.account.findUnique({
+    where: {
+      email: email,
+    },
+  });
+
+  const lastLoginDate = user?.lastLoginDate?.toISOString().split("T")[0];
+  let dailyLoginCount = user?.dailyLoginCount ?? 0;
+
+  if (lastLoginDate !== today) {
+    dailyLoginCount = 1; // reset daily login count
+  } else {
+    dailyLoginCount += 1; // increment daily login count
+  }
+
+  await prisma.account.update({
+    where: {
+      email: email,
+    },
+    data: {
+      lastLoginDate: new Date(),
+      dailyLoginCount: dailyLoginCount,
+    },
+  });
 };
 
 /**
@@ -238,6 +275,12 @@ export const changePassword = async (id, oldPassword, newPassword) => {
           },
         });
 
+        updateLastPasswordChanged(id);
+        updateLastAction(
+          id,
+          "Change password at time: " + new Date().toISOString()
+        );
+
         return {
           success: true,
           message: "SUCCESS",
@@ -255,6 +298,17 @@ export const changePassword = async (id, oldPassword, newPassword) => {
       message: error.message,
     };
   }
+};
+
+const updateLastPasswordChanged = async (id) => {
+  await prisma.account.update({
+    where: {
+      id: id,
+    },
+    data: {
+      lastPasswordChanged: new Date(),
+    },
+  });
 };
 
 export const resetPassword = async (email) => {
@@ -349,5 +403,20 @@ export const getRoles = async (userId) => {
       success: false,
       message: err.message,
     };
+  }
+};
+
+export const updateLastAction = async (userId, action) => {
+  try {
+    await prisma.account.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        description: action,
+      },
+    });
+  } catch (err) {
+    console.log("There was an error updating: ", err.message);
   }
 };

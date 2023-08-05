@@ -17,8 +17,8 @@ model service {
   createdBy   String?
   price       price[]
   commission  commission[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt   DateTime?    @default(now())
+  updatedAt   DateTime?    @updatedAt
 }
 
 model price {
@@ -72,24 +72,24 @@ model branch {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   status      Boolean      @default(true)
-  createdDate DateTime     @default(now())
+  createdDate DateTime?    @default(now())
   createdBy   String?
-  updatedDate DateTime     @updatedAt
+  updatedDate DateTime?    @updatedAt
   updatedBy   String?
   staff       staff[]
   department  department[]
 }
 
 model department {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   name        String
-  status      Boolean  @default(true)
-  createdDate DateTime @default(now())
+  status      Boolean   @default(true)
+  createdDate DateTime? @default(now())
   createdBy   String?
-  updatedDate DateTime @updatedAt
+  updatedDate DateTime? @updatedAt
   updatedBy   String?
-  branchId    String   @db.ObjectId
-  branch      branch   @relation(fields: [branchId], references: [id])
+  branchId    String    @db.ObjectId
+  branch      branch    @relation(fields: [branchId], references: [id])
 }
 
 model level {
@@ -100,28 +100,28 @@ model level {
 }
 
 model transaction {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
   serviceId       String
-  transactionDate DateTime
-  createdAt       DateTime @default(now())
+  transactionDate DateTime?
+  createdAt       DateTime? @default(now())
   createdBy       String?
   status          String? // like: "created, accepted, completed "
-  accountId       String   @db.ObjectId
-  account         account  @relation(fields: [accountId], references: [id])
-  moneyEarned     Int      @default(0)
+  accountId       String    @db.ObjectId
+  account         account   @relation(fields: [accountId], references: [id])
+  moneyEarned     Int       @default(0)
 }
 
 model account {
   id                  String         @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
+  createdAt           DateTime?      @default(now())
+  updatedAt           DateTime?      @updatedAt
   email               String         @unique
   password            String
   role                String?
-  // add any other fields you need
   levelId             String?
   exp                 Int            @default(0)
   staff               staff[]
+  dailyLoginCount     Int?           @default(0)
   deviceInfo          String?
   description         String?
   lastLoginDate       DateTime?
@@ -136,25 +136,25 @@ model group {
   name        String
   status      Boolean        @default(true)
   description String?
-  createdAt   DateTime       @default(now())
+  createdAt   DateTime?      @default(now())
   createdBy   String?
-  updatedAt   DateTime       @updatedAt
+  updatedAt   DateTime?      @updatedAt
   updatedBy   String?
   groupUsers  groupAccount[]
   groupRole   groupRole[]
 }
 
 model groupAccount {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  groupId     String   @db.ObjectId
-  group       group    @relation(fields: [groupId], references: [id])
-  account     account  @relation(fields: [accountId], references: [id])
-  accountId   String   @db.ObjectId
-  status      Boolean  @default(true)
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  groupId     String    @db.ObjectId
+  group       group     @relation(fields: [groupId], references: [id])
+  account     account   @relation(fields: [accountId], references: [id])
+  accountId   String    @db.ObjectId
+  status      Boolean   @default(true)
   description String?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime? @default(now())
   createdBy   String?
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime? @updatedAt
   updatedBy   String?
 }
 
@@ -166,25 +166,25 @@ model role {
   rolePermission rolePermission[]
   status         Boolean          @default(true)
   description    String?
-  createdAt      DateTime         @default(now())
+  createdAt      DateTime?        @default(now())
   createdBy      String?
-  updatedAt      DateTime         @updatedAt
+  updatedAt      DateTime?        @updatedAt
   updatedBy      String?
   groupId        String?          @db.ObjectId
   groupRole      groupRole[]
 }
 
 model groupRole {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  groupId     String   @db.ObjectId
-  group       group    @relation(fields: [groupId], references: [id])
-  roleId      String   @db.ObjectId
-  role        role     @relation(fields: [roleId], references: [id])
-  status      Boolean  @default(true)
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  groupId     String    @db.ObjectId
+  group       group     @relation(fields: [groupId], references: [id])
+  roleId      String    @db.ObjectId
+  role        role      @relation(fields: [roleId], references: [id])
+  status      Boolean   @default(true)
   description String?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime? @default(now())
   createdBy   String?
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime? @updatedAt
   updatedBy   String?
 }
 
@@ -199,9 +199,9 @@ model permission {
   rolePermission rolePermission[]
   status         Boolean          @default(true)
   description    String?
-  createdAt      DateTime         @default(now())
+  createdAt      DateTime?        @default(now())
   createdBy      String?
-  updatedAt      DateTime         @updatedAt
+  updatedAt      DateTime?        @updatedAt
   updatedBy      String?
 }
 
@@ -213,8 +213,8 @@ model rolePermission {
   permission   permission @relation(fields: [permissionId], references: [id])
   status       Boolean    @default(true)
   description  String?
-  createdAt    DateTime   @default(now())
+  createdAt    DateTime?  @default(now())
   createdBy    String?
-  updatedAt    DateTime   @updatedAt
+  updatedAt    DateTime?  @updatedAt
   updatedBy    String?
 }

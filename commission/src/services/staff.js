@@ -38,7 +38,42 @@ export const getById = async (id) => {
       where: {
         id: id,
       },
-      include: { _count: true, transactions: true },
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        sex: true,
+        address: true,
+        dateOfBirth: true,
+        branch: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        account: {
+          select: {
+            _count: true,
+            groupUsers: {
+              select: {
+                group: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                account: {
+                  select: {
+                    id: true,
+                    email: true,
+                    lastLoginDate: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     return {
