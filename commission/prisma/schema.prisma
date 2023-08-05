@@ -55,17 +55,19 @@ model serviceCommission {
 }
 
 model staff {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  phone       String?
-  address     String?
-  dateOfBirth DateTime?
-  sex         Boolean?
-  type        String    @default("staff")
-  branchId    String    @db.ObjectId
-  branch      branch?   @relation(fields: [branchId], references: [id])
-  accountId   String    @db.ObjectId
-  account     account   @relation(fields: [accountId], references: [id])
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  phone        String?
+  address      String?
+  dateOfBirth  DateTime?
+  sex          Boolean?
+  type         String      @default("staff")
+  departmentId String?     @db.ObjectId
+  department   department? @relation(fields: [departmentId], references: [id])
+  branchId     String?     @db.ObjectId
+  branch       branch?     @relation(fields: [branchId], references: [id])
+  accountId    String      @db.ObjectId
+  account      account     @relation(fields: [accountId], references: [id])
 }
 
 model branch {
@@ -90,6 +92,7 @@ model department {
   updatedBy   String?
   branchId    String    @db.ObjectId
   branch      branch    @relation(fields: [branchId], references: [id])
+  staff       staff[]
 }
 
 model level {

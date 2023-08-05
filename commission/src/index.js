@@ -112,8 +112,8 @@ app.use("/api/group", groupRouter);
 app.use("/api/group-account", groupAccountRouter);
 app.use("/api/role-group", roleGroupRouter);
 
-// app.listen(process.env.PORT, () => {
-//   console.log("Server listening on port " + process.env.PORT);
-// });
+app.listen(process.env.PORT, () => {
+  console.log("Server listening on port " + process.env.PORT);
+});
 
 export default app;

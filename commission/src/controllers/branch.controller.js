@@ -18,10 +18,10 @@ export const getBranchById = async (req, res) => {
       });
     }
   } else {
-    return {
+    return res.status(403).json({
       success: false,
       message: "Permission denied!",
-    };
+    });
   }
 };
 

@@ -41,7 +41,7 @@ const fetchUserDataFromDB = async (userId) => {
 
 export const initializeCASLAbilityFromData = async (users) => {
   try {
-    const { can, build } = new AbilityBuilder(createMongoAbility);
+    const { can, build, cannot } = new AbilityBuilder(createMongoAbility);
 
     if (users.groupUsers.length === 0) {
       cannot("manage", "all");

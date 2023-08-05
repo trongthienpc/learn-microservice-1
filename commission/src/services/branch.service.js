@@ -57,6 +57,28 @@ export const getById = async (id) => {
       where: {
         id: id,
       },
+      select: {
+        _count: true,
+        id: true,
+        name: true,
+        status: true,
+        createdBy: true,
+        createdDate: true,
+        updatedBy: true,
+        updatedDate: true,
+        staff: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        department: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
 
     return {
