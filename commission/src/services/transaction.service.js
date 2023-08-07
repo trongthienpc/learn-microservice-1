@@ -107,7 +107,7 @@ export const getByUserId = async (id) => {
   }
 };
 
-export const updateTransactionStatus = async (id, status) => {
+export const updateTransactionStatus = async (id, data) => {
   try {
     // get transaction by id
     const transaction = await prisma.transaction.findUnique({
@@ -196,7 +196,8 @@ export const updateTransactionStatus = async (id, status) => {
           id: id,
         },
         data: {
-          status: status,
+          status: data.status,
+          updatedBy: data.updatedBy,
           moneyEarned: earned,
         },
       });

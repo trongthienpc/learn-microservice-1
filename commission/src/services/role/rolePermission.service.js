@@ -21,12 +21,7 @@ export const create = async (data) => {
 
 export const getAll = async () => {
   try {
-    const data = await prisma.rolePermission.findMany({
-      include: {
-        permission: true,
-        role: true,
-      },
-    });
+    const data = await prisma.rolePermission.findMany({});
     return {
       success: true,
       message: "SUCCESS",
@@ -43,9 +38,24 @@ export const getById = async (id) => {
       where: {
         id: id,
       },
-      include: {
-        permission: true,
-        role: true,
+      select: {
+        permission: {
+          select: {
+            _count: true,
+            id: true,
+            action: true,
+            resource: true,
+            status: true,
+          },
+        },
+        role: {
+          select: {
+            _count: true,
+            id: true,
+            name: true,
+            status: true,
+          },
+        },
       },
     });
 

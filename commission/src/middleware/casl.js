@@ -77,7 +77,8 @@ export const initializeCASLAbilityFromDB = async (userId) => {
   try {
     // check if the data is cached in Redis
     redisClient.connect();
-    const cachedData = await redisClient.get(`${userId}`);
+    // const cachedData = await redisClient.get(`${userId}`);
+    const cachedData = null;
     if (cachedData) {
       console.log("We loaded cached data");
       const abilityData = JSON.parse(cachedData);
@@ -88,7 +89,7 @@ export const initializeCASLAbilityFromDB = async (userId) => {
       if (users) {
         const ability = await initializeCASLAbilityFromData(users);
         await redisClient.set(`${userId}`, JSON.stringify(users), {
-          EX: 3600,
+          EX: 600,
         });
         redisClient.quit();
         return ability;

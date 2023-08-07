@@ -4,9 +4,17 @@ import {
   getById,
   update,
 } from "../services/department.service.js";
+import {
+  ACCESS_DENIED,
+  CREATE,
+  DEPARTMENT,
+  FORBIDDEN,
+  READ,
+  UPDATE,
+} from "../utils/constants.js";
 
 export const getDepartmentById = async (req, res) => {
-  if (req.ability.can("read", "department")) {
+  if (req.ability.can(READ, DEPARTMENT)) {
     try {
       const id = req.params.id;
       const response = await getById(id);
@@ -17,21 +25,21 @@ export const getDepartmentById = async (req, res) => {
         data: response.data,
       });
     } catch (error) {
-      res.status(501).json({
+      return res.status(501).json({
         success: false,
         message: error.message,
       });
     }
   } else {
-    return {
+    return res.status(FORBIDDEN).json({
       success: false,
-      message: "Permission denied!",
-    };
+      message: ACCESS_DENIED,
+    });
   }
 };
 
 export const getAllDepartment = async (req, res) => {
-  if (req.ability.can("read", "department")) {
+  if (req.ability.can(READ, DEPARTMENT)) {
     try {
       const response = await getAll();
 
@@ -41,23 +49,25 @@ export const getAllDepartment = async (req, res) => {
         data: response.data,
       });
     } catch (error) {
-      res.status(501).json({
+      return res.status(501).json({
         success: false,
         message: error.message,
       });
     }
   } else {
-    return res.status(403).json({
+    return res.status(FORBIDDEN).json({
       success: false,
-      message: "Permission denied!",
+      message: ACCESS_DENIED,
     });
   }
 };
 
 export const updateDepartment = async (req, res) => {
   const id = req.params.id;
-  const isAllow = req.ability.can("update", "department");
+  const isAllow = req.ability.can(UPDATE, DEPARTMENT);
+
   const data = req.body;
+
   if (isAllow) {
     try {
       const response = await update(id, data);
@@ -73,16 +83,16 @@ export const updateDepartment = async (req, res) => {
       });
     }
   } else {
-    return res.status(403).json({
+    return res.status(FORBIDDEN).json({
       success: false,
-      message: "Permission denied!",
+      message: ACCESS_DENIED,
     });
   }
 };
 
 export const createDepartment = async (req, res) => {
   try {
-    if (req.ability.can("create", "department")) {
+    if (req.ability.can(CREATE, DEPARTMENT)) {
       const data = req.body;
 
       const createdBy = req.userId;
@@ -97,13 +107,13 @@ export const createDepartment = async (req, res) => {
         data: response.data,
       });
     } else {
-      return res.status(403).json({
+      return res.status(FORBIDDEN).json({
         success: false,
-        message: "Permission denied!",
+        message: ACCESS_DENIED,
       });
     }
   } catch (error) {
-    res.status(501).json({
+    return res.status(501).json({
       success: false,
       message: error.message,
     });

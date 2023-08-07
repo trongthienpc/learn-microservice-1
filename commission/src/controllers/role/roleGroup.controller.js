@@ -4,45 +4,58 @@ import {
   getAll,
   getById,
 } from "../../services/role/roleGroup.service.js";
+import { ACCESS_DENIED, FORBIDDEN } from "../../utils/constants.js";
 
 export const getRoleGroupById = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const response = await getById(id);
+  if (req.ability.can("read", "group-role")) {
+    try {
+      const id = req.params.id;
+      const response = await getById(id);
 
-    return res.status(200).json({
-      success: response.success,
-      message: response.message,
-      data: response.data,
-    });
-  } catch (error) {
-    res.status(501).json({
-      success: false,
-      message: error.message,
-    });
+      return res.status(200).json({
+        success: response.success,
+        message: response.message,
+        data: response.data,
+      });
+    } catch (error) {
+      res.status(501).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  } else {
+    return res
+      .status(FORBIDDEN)
+      .json({ success: false, message: ACCESS_DENIED });
   }
 };
 
 export const deleteRoleGroupById = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const response = await deleteById(id);
+  if (req.ability.can("delete", "group-role")) {
+    try {
+      const id = req.params.id;
+      const response = await deleteById(id);
 
-    return res.status(200).json({
-      success: response.success,
-      message: response.message,
-      data: response.data,
-    });
-  } catch (error) {
-    res.status(501).json({
-      success: false,
-      message: error.message,
-    });
+      return res.status(200).json({
+        success: response.success,
+        message: response.message,
+        data: response.data,
+      });
+    } catch (error) {
+      res.status(501).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  } else {
+    return res
+      .status(FORBIDDEN)
+      .json({ success: false, message: ACCESS_DENIED });
   }
 };
 
 export const getAllRoleGroup = async (req, res) => {
-  if (req.ability.can("read", "branch")) {
+  if (req.ability.can("read", "group-role")) {
     try {
       const response = await getAll();
 
@@ -59,29 +72,33 @@ export const getAllRoleGroup = async (req, res) => {
     }
   } else {
     // The user is not authorized to read branches
-    res.status(403).json({ error: "Forbidden 1" });
+    res.status(FORBIDDEN).json({ error: ACCESS_DENIED });
   }
 };
 
 export const createRoleGroup = async (req, res) => {
-  try {
-    const data = req.body;
+  if (req.ability.can("create", "group-role")) {
+    try {
+      const data = req.body;
 
-    const createdBy = req.userId;
+      const createdBy = req.userId;
 
-    const newData = { ...data, createdBy };
+      const newData = { ...data, createdBy };
 
-    const response = await create(newData);
+      const response = await create(newData);
 
-    return res.status(200).json({
-      success: response.success,
-      message: response.message,
-      data: response.data,
-    });
-  } catch (error) {
-    res.status(501).json({
-      success: false,
-      message: error.message,
-    });
+      return res.status(200).json({
+        success: response.success,
+        message: response.message,
+        data: response.data,
+      });
+    } catch (error) {
+      res.status(501).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  } else {
+    res.status(FORBIDDEN).json({ error: ACCESS_DENIED });
   }
 };

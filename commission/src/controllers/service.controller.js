@@ -1,7 +1,14 @@
 import { create, getAll, getById } from "../services/services.js";
+import {
+  ACCESS_DENIED,
+  CREATE,
+  FORBIDDEN,
+  READ,
+  SERVICE,
+} from "../utils/constants.js";
 
 export const getServiceById = async (req, res) => {
-  const isAllow = req.ability.can("read", "service");
+  const isAllow = req.ability.can(READ, SERVICE);
   if (isAllow) {
     try {
       const id = req.params.id;
@@ -20,13 +27,13 @@ export const getServiceById = async (req, res) => {
     }
   } else {
     return res
-      .status(403)
-      .json({ success: false, message: "Permission denied!" });
+      .status(FORBIDDEN)
+      .json({ success: false, message: ACCESS_DENIED });
   }
 };
 
 export const getAllService = async (req, res) => {
-  const isAllow = req.ability.can("read", "service");
+  const isAllow = req.ability.can(READ, SERVICE);
   if (isAllow) {
     try {
       const response = await getAll();
@@ -44,20 +51,22 @@ export const getAllService = async (req, res) => {
     }
   } else {
     return res
-      .status(403)
-      .json({ success: false, message: "Permission denied!" });
+      .status(FORBIDDEN)
+      .json({ success: false, message: ACCESS_DENIED });
   }
 };
 
 export const createService = async (req, res) => {
-  const isAllow = req.ability.can("create", "service");
+  const isAllow = req.ability.can(CREATE, SERVICE);
   if (isAllow) {
     try {
       const data = req.body;
 
-      console.log(data);
+      const userId = req.userId;
 
-      const response = await create(data);
+      const newData = { ...data, createdBy: userId };
+
+      const response = await create(newData);
 
       return res.status(200).json({
         success: response.success,
@@ -72,7 +81,7 @@ export const createService = async (req, res) => {
     }
   } else {
     return res
-      .status(403)
-      .json({ success: false, message: "Permission denied!" });
+      .status(FORBIDDEN)
+      .json({ success: false, message: ACCESS_DENIED });
   }
 };

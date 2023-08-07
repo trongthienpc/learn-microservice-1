@@ -101,7 +101,7 @@ app.use("/api/service", serviceRoute);
 app.use("/api/price", priceRoute);
 app.use("/api/commission", commissionRoute);
 app.use("/api/transaction", transactionRoute);
-app.use("/api/commissionRate", commissionRateRoute);
+app.use("/api/commission-target", commissionRateRoute);
 app.use("/api/service-commission", serviceCommissionRoute);
 
 /* --- ROLES - PERMISSIONS --- */
@@ -112,8 +112,8 @@ app.use("/api/group", groupRouter);
 app.use("/api/group-account", groupAccountRouter);
 app.use("/api/role-group", roleGroupRouter);
 
-app.listen(process.env.PORT, () => {
-  console.log("Server listening on port " + process.env.PORT);
-});
+// app.listen(process.env.PORT, () => {
+//   console.log("Server listening on port " + process.env.PORT);
+// });
 
 export default app;

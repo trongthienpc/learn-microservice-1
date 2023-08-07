@@ -34,3 +34,30 @@ export const REFRESH_TOKEN_INVALID_CODE = 400;
 export const TOKEN_INVALID = "Invalid token";
 export const TOKEN_SUCCESS = "Token succeeded";
 export const TOKEN_INVALID_CODE = 400;
+
+//
+export const ACCESS_DENIED = "Access denied";
+
+// PERMISSION - RESOURCE
+export const READ = "read";
+export const CREATE = "create";
+export const UPDATE = "update";
+export const DELETE = "delete";
+
+export const ROLE = "role";
+export const PERMISSION = "permission";
+export const ROLE_PERMISSION = "role-permission";
+export const GROUP = "group";
+export const GROUP_ROLE = "group-role";
+export const ACCOUNT = "account";
+export const GROUP_ACCOUNT = "group-account";
+export const BRANCH = "branch";
+export const SERVICE = "service";
+export const PRICE = "price";
+export const TRANSACTION = "transaction";
+export const COMMISSION = "commission";
+export const COMMISSION_TARGET = "commission-target";
+export const SERVICE_COMMISSION = "service-commission";
+export const STAFF = "staff";
+export const DEPARTMENT = "department";
+export const LEVEL = "level";

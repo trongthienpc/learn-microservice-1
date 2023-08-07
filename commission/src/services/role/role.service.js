@@ -59,13 +59,23 @@ export const getById = async (id) => {
       },
       include: {
         groupRole: {
-          include: {
-            group: true,
+          select: {
+            group: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
         rolePermission: {
-          include: {
-            permission: true,
+          select: {
+            permission: {
+              select: {
+                resource: true,
+                action: true,
+              },
+            },
           },
         },
       },
@@ -88,12 +98,16 @@ export const getById = async (id) => {
   }
 };
 
-export const deleteById = async (id) => {
+export const deleteById = async (id, userId) => {
   try {
     if (id) {
       const data = await prisma.role.update({
         where: {
           id: id,
+        },
+        data: {
+          status: false,
+          updatedBy: userId,
         },
       });
 

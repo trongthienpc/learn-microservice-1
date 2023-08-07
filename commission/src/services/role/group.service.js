@@ -34,11 +34,15 @@ export const getAll = async () => {
 
 export const update = async (id, data) => {
   try {
+    const { name, userId } = data;
     const res = await prisma.group.update({
       where: {
         id: id,
       },
-      data: data,
+      data: {
+        name: name,
+        updatedBy: userId,
+      },
     });
 
     return {
@@ -105,7 +109,7 @@ export const getById = async (id) => {
   }
 };
 
-export const deleteById = async (id) => {
+export const deleteById = async (id, userId) => {
   try {
     const res = await prisma.group.update({
       where: {
@@ -113,6 +117,7 @@ export const deleteById = async (id) => {
       },
       data: {
         status: false,
+        updatedBy: userId,
       },
     });
 
