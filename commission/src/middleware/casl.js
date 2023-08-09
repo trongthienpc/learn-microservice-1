@@ -1,6 +1,6 @@
 import { AbilityBuilder, createMongoAbility } from "@casl/ability";
 import prisma from "../libs/prisma.js";
-import redisClient from "./redis.js";
+import { redisGet, redisSet } from "./redis.js";
 
 const fetchUserDataFromDB = async (userId) => {
   try {
@@ -68,7 +68,7 @@ export const initializeCASLAbilityFromData = async (users) => {
     }
     return build();
   } catch (error) {
-    console.log("Error initializing CASL ability: " + error.message);
+    console.log("Error initializing CASL ability 1: " + error.message);
     return null;
   }
 };
@@ -76,22 +76,19 @@ export const initializeCASLAbilityFromData = async (users) => {
 export const initializeCASLAbilityFromDB = async (userId) => {
   try {
     // check if the data is cached in Redis
-    redisClient.connect();
-    // const cachedData = await redisClient.get(`${userId}`);
-    const cachedData = null;
+    const cachedData = await redisGet(userId);
+
     if (cachedData) {
       console.log("We loaded cached data");
       const abilityData = JSON.parse(cachedData);
-      redisClient.quit();
+
       return await initializeCASLAbilityFromData(abilityData);
     } else {
       const users = await fetchUserDataFromDB(userId);
       if (users) {
         const ability = await initializeCASLAbilityFromData(users);
-        await redisClient.set(`${userId}`, JSON.stringify(users), {
-          EX: 600,
-        });
-        redisClient.quit();
+        await redisSet(`${userId}`, JSON.stringify(users));
+
         return ability;
       } else {
         // return a default ability if user data is not found in the database
@@ -99,7 +96,7 @@ export const initializeCASLAbilityFromDB = async (userId) => {
       }
     }
   } catch (error) {
-    console.log("Error initializing CASL ability: " + error.message);
+    console.log("Error initializing CASL ability 2: " + error.message);
     return createMongoAbility([]);
   }
 };

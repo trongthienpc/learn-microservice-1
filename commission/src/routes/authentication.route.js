@@ -35,4 +35,9 @@ authenticationRouter.put("/:id/changePassword", changePasswordController);
  * user logout route
  */
 
+authenticationRouter.post("/logout", (req, res) => {
+  res.clearCookie("refreshToken");
+  res.status(200).json({ success: true, message: "Logged out successfully!" });
+});
+
 export default authenticationRouter;

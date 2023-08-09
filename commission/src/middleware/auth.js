@@ -10,6 +10,7 @@ import {
 import bcrypt from "bcrypt";
 import { generateAccessToken } from "./jwt.js";
 import { getTodayISODate } from "../utils/helper.js";
+import { createRoleGroup } from "../controllers/role/roleGroup.controller.js";
 
 /**
  * Register a new user with the given email and password
@@ -17,41 +18,49 @@ import { getTodayISODate } from "../utils/helper.js";
  * @param {string} password - user's password
  * @returns {object} response object containing the status, message and token information
  */
-export const register = async (email, password) => {
+export const register = async (username, password, profileId) => {
   try {
     // check if email is already registered
-    const userExists = await prisma.account.findUnique({
-      where: {
-        email: email,
-      },
-    });
+    if (username && password && profileId) {
+      const userExists = await prisma.account.findUnique({
+        where: {
+          email: username,
+        },
+      });
 
-    if (userExists) {
+      if (userExists) {
+        return {
+          success: false,
+          message: REGISTER_DUPLICATE_EMAIL,
+        };
+      }
+
+      // else create new user
+      const salt = await bcrypt.genSalt(15);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      const user = await prisma.account.create({
+        data: {
+          email: username,
+          password: hashedPassword,
+          staffId: profileId,
+        },
+      });
+
+      // generate jwt token
+      const token = generateAccessToken(user.id);
+
+      return {
+        success: true,
+        message: REGISTER_SUCCESS,
+        data: user,
+      };
+    } else {
       return {
         success: false,
-        message: REGISTER_DUPLICATE_EMAIL,
+        message: "Please fulfill your registration",
       };
     }
-
-    // else create new user
-    const salt = await bcrypt.genSalt(15);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const user = await prisma.account.create({
-      data: {
-        email,
-        password: hashedPassword,
-      },
-    });
-
-    // generate jwt token
-    const token = generateAccessToken(user.id);
-
-    return {
-      success: true,
-      message: REGISTER_SUCCESS,
-      data: user,
-    };
   } catch (err) {
     console.log(err);
   }
@@ -91,6 +100,17 @@ export const login = async (email, password) => {
       };
     }
 
+    // get info about this account
+    const userInfo = await prisma.staff.findFirst({
+      where: {
+        account: {
+          some: {
+            id: user.id,
+          },
+        },
+      },
+    });
+
     updateLastAction(
       user.id,
       "Login to the system at time: " + new Date().toISOString()
@@ -102,7 +122,7 @@ export const login = async (email, password) => {
       statusCode: 200,
       success: true,
       message: LOGIN_SUCCESS,
-      data: accessToken,
+      data: { ...userInfo, accessToken },
     };
   } catch (error) {
     console.error(error);
@@ -117,25 +137,26 @@ const updateAccountWhenLogin = async (email) => {
       email: email,
     },
   });
+  if (user) {
+    const lastLoginDate = user?.lastLoginDate?.toISOString().split("T")[0];
+    let dailyLoginCount = user?.dailyLoginCount ?? 0;
 
-  const lastLoginDate = user?.lastLoginDate?.toISOString().split("T")[0];
-  let dailyLoginCount = user?.dailyLoginCount ?? 0;
+    if (lastLoginDate !== today) {
+      dailyLoginCount = 1; // reset daily login count
+    } else {
+      dailyLoginCount += 1; // increment daily login count
+    }
 
-  if (lastLoginDate !== today) {
-    dailyLoginCount = 1; // reset daily login count
-  } else {
-    dailyLoginCount += 1; // increment daily login count
+    await prisma.account.update({
+      where: {
+        email: email,
+      },
+      data: {
+        lastLoginDate: new Date(),
+        dailyLoginCount: dailyLoginCount,
+      },
+    });
   }
-
-  await prisma.account.update({
-    where: {
-      email: email,
-    },
-    data: {
-      lastLoginDate: new Date(),
-      dailyLoginCount: dailyLoginCount,
-    },
-  });
 };
 
 /**
@@ -376,14 +397,21 @@ export const getRoles = async (userId) => {
     if (userId) {
       const data = await prisma.account.findUnique({
         where: { id: userId },
-        include: {
+        select: {
           groupUsers: {
-            include: {
+            select: {
               group: {
-                include: {
-                  roles: {
-                    include: {
-                      rolePermission,
+                select: {
+                  groupRole: {
+                    select: {
+                      role: {
+                        select: {
+                          id: true,
+                          name: true,
+                          type: true,
+                          status: true,
+                        },
+                      },
                     },
                   },
                 },

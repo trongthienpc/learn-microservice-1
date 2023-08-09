@@ -11,7 +11,7 @@
   },
   "scripts": {
     "dev": "nodemon src/index",
-    "test": "jest --forceExit"
+    "test": "jest --forceExit --detectOpenHandles"
   },
   "dependencies": {
     "@casl/ability": "^6.5.0",

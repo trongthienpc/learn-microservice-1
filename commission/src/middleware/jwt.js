@@ -6,6 +6,7 @@ import {
   TOKEN_SUCCESS,
   UNAUTHORIZED,
 } from "../utils/constants.js";
+import { initializeCASLAbilityFromDB } from "./casl.js";
 
 /**
  * Generates a JWT token
@@ -86,7 +87,7 @@ export const verifyFreshToken = (token) => {
  * @param {function} next
  * @returns
  */
-export const checkAuthenticated = (req, res, next) => {
+export const checkAuthenticated = async (req, res, next) => {
   if (
     req?.originalUrl?.includes("/login") ||
     req.originalUrl?.includes("/logout") ||
@@ -96,7 +97,8 @@ export const checkAuthenticated = (req, res, next) => {
     return next();
   }
 
-  const token = req.headers.authorization?.split(" ")[1];
+  // const token = req.headers.authorization?.split(" ")[1];
+  let token = req?.headers.token;
 
   if (!token) {
     return res.status(UNAUTHORIZED).json({
@@ -105,17 +107,32 @@ export const checkAuthenticated = (req, res, next) => {
     });
   }
 
-  try {
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
-      if (err) {
-        console.log(err);
-        return res.status(501).json({ success: false, message: err.message });
-      } else {
-        req.userId = decoded.userId;
-        next();
-      }
-    });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: e.message });
+  if (token && token.startsWith("Bearer ")) {
+    const accessToken = token.split(" ")[1];
+    try {
+      jwt.verify(
+        accessToken,
+        process.env.ACCESS_TOKEN_SECRET,
+        async function (err, decoded) {
+          if (err) {
+            console.log(err);
+            return res
+              .status(501)
+              .json({ success: false, message: err.message });
+          } else {
+            req.userId = decoded.userId;
+            const ability = await initializeCASLAbilityFromDB(req.userId);
+            req.ability = ability;
+            next();
+          }
+        }
+      );
+    } catch (error) {
+      return res.status(500).json({ success: false, message: e.message });
+    }
+  } else {
+    return res
+      .status(500)
+      .json({ success: false, message: "Invalid access token" });
   }
 };

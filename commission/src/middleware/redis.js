@@ -9,15 +9,22 @@ redisClient.on("error", (err) => console.log("Redis error: " + err));
 redisClient.on("connect", (err) => console.log("Connected to Redis!"));
 redisClient.on("disconnect", (err) => console.log("Disconnected from Redis!"));
 
-const closeRedisConnection = () => {
-  redisClient.quit((err) => {
-    if (err) console.log(err);
-    console.log("Redis connection closed");
-  });
+export const redisGet = async (key) => {
+  if (!redisClient.isOpen) {
+    await redisClient.connect();
+  }
+
+  const value = await redisClient.get(key);
+
+  return value;
 };
 
-process.on("exit", closeRedisConnection);
-process.on("SIGINT", closeRedisConnection);
-process.on("SIGTERM", closeRedisConnection);
+export const redisSet = async (key, value) => {
+  if (!redisClient.isOpen) {
+    await redisClient.connect();
+  }
+
+  await redisClient.set(key, value, { EX: 600 });
+};
 
 export default redisClient;

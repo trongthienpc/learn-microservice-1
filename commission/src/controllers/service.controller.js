@@ -1,3 +1,4 @@
+import { getRoles } from "../middleware/auth.js";
 import { create, getAll, getById } from "../services/services.js";
 import {
   ACCESS_DENIED,
@@ -36,13 +37,30 @@ export const getAllService = async (req, res) => {
   const isAllow = req.ability.can(READ, SERVICE);
   if (isAllow) {
     try {
+      let pageSize = parseInt(req.query?.pageSize) || 10;
+      let page = parseInt(req.query?.page) || 1;
+
       const response = await getAll();
 
-      return res.status(200).json({
-        success: response.success,
-        message: response.message,
-        data: response.data,
-      });
+      const r = await getRoles(req.userId);
+
+      if (response && response.data?.length > 0) {
+        let totalPages = Math.ceil(response.data.length / pageSize);
+
+        if (page > totalPages) page = totalPages;
+
+        return res.status(200).json({
+          success: response.success,
+          message: response.message,
+          totalServices: response.data.length,
+          page: page,
+          totalPages: totalPages,
+          services: response.data.slice(
+            page * pageSize - pageSize,
+            page * pageSize
+          ),
+        });
+      }
     } catch (error) {
       res.status(501).json({
         success: false,

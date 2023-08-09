@@ -14,12 +14,8 @@ import { create } from "../services/staff.js";
  * @returns
  */
 export const registerController = async (req, res) => {
-  const { email, password, name, address, dateOfBirth, branchId, sex } =
+  const { username, password, name, address, dateOfBirth, branchId, sex } =
     req.body;
-
-  const response = await register(email, password);
-
-  const user = response.data;
 
   const data = {
     name: name,
@@ -27,10 +23,11 @@ export const registerController = async (req, res) => {
     dateOfBirth: dateOfBirth,
     branchId: branchId,
     sex: sex,
-    accountId: user.id,
   };
 
   const newProfile = await create(data);
+
+  const response = await register(username, password, newProfile.data?.id);
 
   return res.status(200).json(newProfile);
 };
@@ -39,9 +36,9 @@ export const registerController = async (req, res) => {
  * User login method
  */
 export const loginController = async (req, res) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
-  let response = await login(email, password);
+  let response = await login(username, password);
 
   return res.status(200).json(response);
 };
@@ -50,17 +47,17 @@ export const loginController = async (req, res) => {
  * User reset password method
  */
 export const resetPasswordController = async (req, res) => {
-  const { email } = req.body;
+  const { username } = req.body;
 
   const subject = "Reset Password";
 
-  const response = await resetPassword(email);
+  const response = await resetPassword(username);
 
   if (response.success) {
     const text = `New password is ${response.data} `;
 
     try {
-      const response = await sendMail(email, subject, text);
+      const response = await sendMail(username, subject, text);
       return res.status(200).json({
         success: response.success,
         message: response.message,

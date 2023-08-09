@@ -33,38 +33,19 @@ const app = express();
 
 const whitelist = ["https://phuongchau.com", "http://localhost:5173"];
 
-const createAbility = async (req, res, next) => {
-  try {
-    if (
-      req?.originalUrl?.includes("/login") ||
-      req.originalUrl?.includes("/logout") ||
-      req?.originalUrl?.includes("/register") ||
-      req?.originalUrl?.includes("/refresh")
-    ) {
-      return next();
-    }
-
-    if (req.userId) {
-      const ability = await initializeCASLAbilityFromDB(req.userId);
-      req.ability = ability;
-      next();
-    }
-
-    // return res.status(403).json({ message: "FORBIDDEN 3!" });
-  } catch (error) {
-    console.log("Error creating ability: ", error);
-    res.status(500).json({ error: "Internal server error 1" });
-  }
-};
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+// };
 
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: "http://localhost:5173", // Change this to your frontend domain
+  credentials: true, // Allow credentials (cookies) to be included
 };
 
 const limitOptions = rateLimit({
@@ -77,7 +58,7 @@ app.use(limitOptions);
 
 app.use(compression());
 
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 app.use(helmet());
 app.use(morgan("dev"));
@@ -85,7 +66,7 @@ app.use(express.json());
 
 app.use("*", checkAuthenticated);
 
-app.use(createAbility);
+// app.use(createAbility);
 
 /* --- BRANCH - DEPARTMENT --- */
 app.use("/api/branch", branchRoute);
@@ -112,8 +93,8 @@ app.use("/api/group", groupRouter);
 app.use("/api/group-account", groupAccountRouter);
 app.use("/api/role-group", roleGroupRouter);
 
-// app.listen(process.env.PORT, () => {
-//   console.log("Server listening on port " + process.env.PORT);
-// });
+app.listen(process.env.PORT, () => {
+  console.log("Server listening on port " + process.env.PORT);
+});
 
 export default app;

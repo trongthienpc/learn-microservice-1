@@ -64,9 +64,14 @@ model commissionTarget {
 }
 
 model serviceCommission {
-  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
   serviceId    String
   commissionId String
+  status       Boolean?  @default(true)
+  createdBy    String?
+  createdAt    DateTime? @default(now())
+  updatedBy    String?
+  updatedAt    DateTime? @updatedAt
 }
 
 model staff {
@@ -81,8 +86,12 @@ model staff {
   department   department? @relation(fields: [departmentId], references: [id])
   branchId     String?     @db.ObjectId
   branch       branch?     @relation(fields: [branchId], references: [id])
-  accountId    String      @db.ObjectId
-  account      account     @relation(fields: [accountId], references: [id])
+  account      account[]
+  status       Boolean?    @default(true)
+  createdBy    String?
+  createdAt    DateTime?   @default(now())
+  updatedBy    String?
+  updatedAt    DateTime?   @updatedAt
 }
 
 model branch {
@@ -143,7 +152,8 @@ model account {
   role                String?
   levelId             String?
   exp                 Int            @default(0)
-  staff               staff[]
+  staffId             String?        @db.ObjectId
+  staff               staff?         @relation(fields: [staffId], references: [id])
   dailyLoginCount     Int?           @default(0)
   deviceInfo          String?
   description         String?

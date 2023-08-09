@@ -22,12 +22,39 @@ export const create = async (data) => {
 export const getAll = async () => {
   try {
     const data = await prisma.service.findMany({
-      include: {
+      select: {
+        id: true,
+        name: true,
+        createdAt: true,
+        createdBy: true,
+        description: true,
+        updatedAt: true,
         _count: true,
-        commission: true,
-        price: true,
+        commission: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 1,
+          select: {
+            id: true,
+            type: true,
+            value: true,
+          },
+        },
+        price: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 1,
+          select: {
+            id: true,
+            price: true,
+          },
+        },
       },
     });
+
+    console.log(data[0]);
     return {
       success: true,
       message: "SUCCESS",

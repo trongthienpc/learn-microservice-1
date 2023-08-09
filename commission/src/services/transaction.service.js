@@ -191,7 +191,7 @@ export const updateTransactionStatus = async (id, data) => {
         console.log("commissionTarget :>> ", commissionTarget);
       }
 
-      const data = await prisma.transaction.update({
+      const res = await prisma.transaction.update({
         where: {
           id: id,
         },
@@ -205,7 +205,7 @@ export const updateTransactionStatus = async (id, data) => {
       return {
         success: true,
         message: "SUCCESS",
-        data: data,
+        data: res,
       };
     }
   } catch (error) {
